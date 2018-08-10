@@ -23,8 +23,9 @@
 ##         health objectives.
 
 ##   Load the National Health Interview Survey data:
-
-NH11 <- readRDS("dataSets/NatHealth2011.rds")
+getwd()
+setwd("F:/Carpetas/R/SB_miniP_2/logistic_regression/dataSets")
+NH11 <- readRDS("NatHealth2011.rds")
 labs <- attributes(NH11)$labels
 
 ##   [CDC website] http://www.cdc.gov/nchs/nhis.htm
@@ -100,8 +101,20 @@ plot(allEffects(hyp.out))
 
 ##   1. Use glm to conduct a logistic regression to predict ever worked
 ##      (everwrk) using age (age_p) and marital status (r_maritl).
+nh11_1 <- subset(NH11, select = c("everwrk", "age_p", "r_maritl"))
+summary(nh11.wrk.age.mar)
+NH11 <- transform(NH11, everwrk = factor(everwrk,levels = c("1 Yes", "2 No")),
+                  r_maritl = droplevels(r_maritl))
+
+mod_1 <- glm(everwrk ~ age_p + r_maritl, data = NH11,
+                      family = "binomial")
+
+summary(mod_1)
+
 ##   2. Predict the probability of working for each level of marital
 ##      status.
+library(effects)
+data.frame(effect("r_maritl", mod_1))
 
 ##   Note that the data is not perfectly clean and ready to be modeled. You
 ##   will need to clean up at least some of the variables before fitting
